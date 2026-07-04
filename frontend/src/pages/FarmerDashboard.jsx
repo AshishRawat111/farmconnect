@@ -4,10 +4,13 @@ import { Trash2, Package, MapPin, Tag, Plus, Loader2, Sparkles, LayoutDashboard 
 import API from "../api";
 import AddCrop from "../components/AddCrop";
 import toast from "react-hot-toast"; // 👈 Added This
+import MarketAnalysis from "../components/MarketAnalysis";
+import AgriAgentChat from "../components/AgriAgentChat";
 
 const FarmerDashboard = () => {
   const [crops, setCrops] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("listed"); // "listed" | "analysis"
 
   const fetchCrops = useCallback(async () => {
     try {
@@ -91,7 +94,7 @@ const FarmerDashboard = () => {
           </div>
         </div>
 
-        <div className="bg-white/[0.02] border border-white/5 rounded-[3rem] p-1 md:p-2 mb-20 shadow-2xl overflow-hidden">
+        <div className="bg-white/[0.02] border border-white/5 rounded-[3rem] p-1 md:p-2 mb-10 shadow-2xl overflow-hidden">
             {/* AddCrop component handle success via callback */}
             <AddCrop onCropAdded={() => {
               toast.success("Nayi fasal list ho gayi! 🌾");
@@ -99,7 +102,42 @@ const FarmerDashboard = () => {
             }} />
         </div>
 
-        <div className="space-y-10">
+        {/* --- DUAL MODE TOGGLE --- */}
+        <div className="flex justify-center mb-16">
+          <div className="inline-flex bg-white/[0.03] p-1 rounded-full border border-white/10 backdrop-blur-md">
+            <button
+              onClick={() => setActiveTab("listed")}
+              className={`px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all duration-300 ${
+                activeTab === "listed" 
+                  ? "bg-emerald-500 text-black shadow-[0_0_20px_rgba(16,185,129,0.3)]" 
+                  : "text-zinc-500 hover:text-white"
+              }`}
+            >
+              Listed Crops
+            </button>
+            <button
+              onClick={() => setActiveTab("analysis")}
+              className={`px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all duration-300 ${
+                activeTab === "analysis" 
+                  ? "bg-emerald-500 text-black shadow-[0_0_20px_rgba(16,185,129,0.3)]" 
+                  : "text-zinc-500 hover:text-white"
+              }`}
+            >
+              Market Analysis
+            </button>
+          </div>
+        </div>
+
+        <AnimatePresence mode="wait">
+          {activeTab === "listed" ? (
+            <motion.div
+              key="listed"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-10"
+            >
           <div className="flex items-center gap-4">
             <h2 className="text-2xl md:text-3xl font-black italic uppercase tracking-tighter">My Listed <span className="text-emerald-500">Crops</span></h2>
             <div className="h-[1px] flex-1 bg-gradient-to-r from-white/10 to-transparent" />
@@ -174,8 +212,22 @@ const FarmerDashboard = () => {
               </AnimatePresence>
             </div>
           )}
-        </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="analysis"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <MarketAnalysis />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
+
+      <AgriAgentChat />
     </div>
   );
 };

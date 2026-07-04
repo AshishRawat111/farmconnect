@@ -94,7 +94,7 @@ const BuyerDashboard = () => {
                 <div className="p-6">
                   {/* Identity & Price */}
                   <div className="mb-4">
-                    <h3 className="font-black text-2xl uppercase italic tracking-tighter text-white mb-1 truncate">{crop.cropName}</h3>
+                    <h3 className=" text-2xl uppercase italic tracking-tighter text-white mb-1 truncate">{crop.cropName}</h3>
                     <div className="flex items-center gap-2">
                       <span className="text-emerald-500 font-black text-2xl italic tracking-tighter">₹{crop.price}</span>
                       <span className="text-zinc-600 text-[10px] font-black uppercase tracking-widest">/ per kg</span>

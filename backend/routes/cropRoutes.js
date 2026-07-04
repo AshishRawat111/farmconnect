@@ -2,36 +2,28 @@ const express = require("express");
 const router = express.Router();
 const protect = require("../middleware/authMiddleware");
 const multer = require("multer");
-const cropController = require("../controllers/cropController");
+const { 
+  addCrop, 
+  getAllCrops, 
+  getFarmerCrops, 
+  deleteCrop, 
+  getLiveMarketRates 
+} = require("../controllers/cropController");
 
-// Multer storage config
+// Multer Setup
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/"); 
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + "-" + file.originalname);
-  },
+  destination: (req, file, cb) => cb(null, "uploads/"),
+  filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
 });
 const upload = multer({ storage });
 
-// Destructuring functions from controller
-const { addCrop, getAllCrops, getFarmerCrops, deleteCrop } = cropController;
-
-// --- ROUTES ---
-
-// 1. Get all crops (Public - No protection needed)
+// --- PUBLIC ROUTES ---
 router.get("/all", getAllCrops);
+router.get("/live-rates", getLiveMarketRates); // Ye naya endpoint hai analytics ke liye
 
-// 2. Add a new crop (Private - 'protect' is MUST here)
-// Note: Sirf EK baar define karein
+// --- PROTECTED ROUTES ---
 router.post('/add', protect, upload.single('image'), addCrop); 
-
-// 3. Get current farmer's crops (Private)
 router.get("/my", protect, getFarmerCrops);
-
-// 4. Delete a crop (Private)
 router.delete("/:id", protect, deleteCrop);
 
 module.exports = router;

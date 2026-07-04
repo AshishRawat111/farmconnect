@@ -1,47 +1,38 @@
 import React from "react";
-import { Cloud, Sun, Droplets, Wind } from "lucide-react";
+import { Droplets, Wind, Eye, Gauge, Loader2, MapPin } from "lucide-react";
 
-const forecasts = [
-  { day: "Today", icon: Sun, temp: "32°C", desc: "Sunny" },
-  { day: "Tue", icon: Cloud, temp: "28°C", desc: "Cloudy" },
-  { day: "Wed", icon: Droplets, temp: "25°C", desc: "Rain" },
-  { day: "Thu", icon: Sun, temp: "30°C", desc: "Sunny" },
-  { day: "Fri", icon: Wind, temp: "27°C", desc: "Windy" },
-];
+const WeatherWidget = ({ data, loading }) => {
+  // If no data is passed from parent yet, show loader
+  if (loading || !data) {
+    return (
+      <div className="w-full p-20 flex justify-center items-center bg-white/[0.03] rounded-[2.5rem]">
+        <Loader2 className="animate-spin text-emerald-500" size={32} />
+      </div>
+    );
+  }
 
-const WeatherWidget = () => {
   return (
-    <div className="rounded-2xl p-6 text-white bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg hover:shadow-xl transition duration-300">
-      
-      {/* Current Weather */}
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm opacity-80">Current Weather</p>
-          <p className="text-4xl font-bold">32°C</p>
-          <p className="mt-1 text-sm opacity-80">
-            Sunny · Humidity 65%
-          </p>
+    <div className="w-full space-y-6">
+      {/* Main Temp Card */}
+      <div className="p-10 bg-white/[0.03] backdrop-blur-3xl rounded-[2.5rem] border border-white/10 text-center shadow-2xl hover:bg-white/[0.05] transition-colors">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <MapPin size={16} className="text-emerald-500" />
+          <h2 className="text-4xl font-black italic uppercase text-white tracking-tighter">
+            {data.name}
+          </h2>
         </div>
+        
+        <p className="text-9xl font-black bg-gradient-to-b from-white to-zinc-600 bg-clip-text text-transparent py-4 tracking-tighter">
+          {Math.round(data.main.temp)}°C
+        </p>
 
-        <Sun className="w-16 h-16 opacity-80 animate-pulse" />
+        <p className="text-emerald-500 font-black italic tracking-[0.3em] uppercase text-sm">
+          {data.weather[0].description}
+        </p>
       </div>
 
-      {/* Forecast */}
-      <div className="mt-6 flex justify-between gap-2">
-        {forecasts.map((f) => {
-          const Icon = f.icon;
-          return (
-            <div
-              key={f.day}
-              className="flex flex-col items-center gap-1 text-xs bg-white/10 px-2 py-2 rounded-lg backdrop-blur-md"
-            >
-              <span className="opacity-70">{f.day}</span>
-              <Icon className="w-4 h-4" />
-              <span className="font-medium">{f.temp}</span>
-            </div>
-          );
-        })}
-      </div>
+      {/* Note: The details grid is handled by the parent (Weather.jsx) 
+          to prevent the visual "double stats" problem. */}
     </div>
   );
 };

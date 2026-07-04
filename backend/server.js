@@ -1,24 +1,34 @@
 const express = require('express');
 const cors = require('cors');
+const cron = require('node-cron');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
-// Ensure this path matches your filename exactly (e.g., cropRoutes.js)
-const cropRoutes = require('./routes/cropRoutes'); 
+const cropRoutes = require('./routes/cropRoutes');
+const { syncMandiData } = require('./controllers/cropController');
+const weatherRoutes = require("./routes/weatherRoutes");
+
+
 require('dotenv').config();
 
 const app = express();
-
-// Connect to Database
 connectDB();
 
-// Middleware
 app.use(cors()); 
 app.use(express.json()); 
 
-// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/crops', cropRoutes);
+
+app.use('/api/mandi', require('./routes/mandiRoutes'));
+app.use('/api/chat', require('./routes/chatRoutes'));
+app.use("/api/weather", weatherRoutes);
 app.use('/uploads', express.static('uploads'));
 
+cron.schedule('0 * * * *', () => {
+  syncMandiData();
+});
+
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});

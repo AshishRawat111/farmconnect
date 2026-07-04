@@ -1,7 +1,9 @@
-import React from 'react';
-import { MapPin, IndianRupee, Weight } from 'lucide-react';
+import React, { useState } from 'react';
+import { MapPin, IndianRupee, Weight, User, Phone, Mail, ChevronDown, ChevronUp } from 'lucide-react';
 
 const CropCard = ({ crop }) => {
+  const [showDetails, setShowDetails] = useState(false);
+
   return (
     <div className="bg-[#1e293b] border border-slate-700 rounded-2xl overflow-hidden hover:scale-[1.02] transition-all group">
       {/* Image Section */}
@@ -12,7 +14,7 @@ const CropCard = ({ crop }) => {
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />
         <div className="absolute top-2 right-2 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase">
-          {crop.category}
+          {crop.category || "Crop"}
         </div>
       </div>
 
@@ -36,8 +38,31 @@ const CropCard = ({ crop }) => {
           <span className="truncate">{crop.location}</span>
         </div>
 
-        <button className="w-full bg-green-600 hover:bg-green-500 text-white text-xs font-bold py-2 rounded-lg transition-colors">
-          VIEW DETAILS
+        {showDetails && (
+          <div className="mt-3 p-3 bg-[#0f172a] rounded-lg border border-slate-700 space-y-2 fade-in">
+            <div className="flex items-center text-slate-300 text-xs">
+              <User size={12} className="mr-2 text-emerald-400" />
+              <span>{crop.farmerName || "Farmer Name Not Available"}</span>
+            </div>
+            <div className="flex items-center text-slate-300 text-xs">
+              <Phone size={12} className="mr-2 text-emerald-400" />
+              <span>{crop.farmerPhone || "Phone Not Available"}</span>
+            </div>
+            <div className="flex items-center text-slate-300 text-xs">
+              <Mail size={12} className="mr-2 text-emerald-400" />
+              <span className="truncate">{crop.farmerEmail || "Email Not Available"}</span>
+            </div>
+          </div>
+        )}
+
+        <button 
+          onClick={() => setShowDetails(!showDetails)}
+          className="w-full flex items-center justify-center bg-green-600 hover:bg-green-500 text-white text-xs font-bold py-2 rounded-lg transition-colors mt-2">
+          {showDetails ? (
+            <>HIDE DETAILS <ChevronUp size={14} className="ml-1" /></>
+          ) : (
+            <>VIEW DETAILS <ChevronDown size={14} className="ml-1" /></>
+          )}
         </button>
       </div>
     </div>
