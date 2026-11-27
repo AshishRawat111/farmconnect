@@ -2,7 +2,7 @@ import axios from "axios";
 
 const API = axios.create({
   // Base URL mein '/api' fix hai
-  baseURL: "http://localhost:5000/api", 
+  baseURL: "https://farmconnect-3.onrender.com/api", 
 });
 
 API.interceptors.request.use((req) => {
