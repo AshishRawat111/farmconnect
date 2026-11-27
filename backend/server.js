@@ -14,7 +14,7 @@ const app = express();
 connectDB();
 
 app.use(cors({
-  origin:"https://itsfarmconnect.netlify.app"
+  origin:["https://itsfarmconnect.netlify.app", "http://localhost:5173"]
 })); 
 app.use(express.json()); 
 
