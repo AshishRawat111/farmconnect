@@ -1,41 +1,98 @@
+
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 
 // Signup Logic
 exports.signup = async (req, res) => {
-    const { username, email, password, role } = req.body; 
     try {
-        const existingUser = await User.findOne({ email });
-        if (existingUser) return res.status(400).json({ message: "User already exists." });
+        const { username, email, password, role } = req.body;
 
+        // Validate fields
+        if (!username || !email || !password || !role) {
+            return res.status(400).json({
+                message: "All fields are required."
+            });
+        }
+
+        // Check existing user
+        const existingUser = await User.findOne({ email });
+
+        if (existingUser) {
+            return res.status(409).json({
+                message: "User already exists."
+            });
+        }
+
+        // Hash password
         const hashedPassword = await bcrypt.hash(password, 12);
 
-        const result = await User.create({ 
-            name: username, // Frontend ka username backend ke 'name' mein jayega
-            email, 
-            password: hashedPassword, 
-            role 
+        // Create user
+        const result = await User.create({
+            name: username,
+            email,
+            password: hashedPassword,
+            role
         });
 
-        res.status(201).json({ result, message: "Signup Successful! 🎉" });
+        return res.status(201).json({
+            success: true,
+            result,
+            message: "Signup Successful!"
+        });
+
     } catch (error) {
-        res.status(500).json({ message: "Signup fail ho gaya." });
+        console.error("SIGNUP ERROR:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: error.message || "Signup failed."
+        });
     }
 };
 
 // Login Logic
 exports.login = async (req, res) => {
-    const { username, password } = req.body; 
     try {
-        // Username (name field) se user ko dhundna
-        const existingUser = await User.findOne({ name: username });
-        if (!existingUser) return res.status(404).json({ message: "User nahi mila." });
+        const { username, password } = req.body;
 
-        const isPasswordCorrect = await bcrypt.compare(password, existingUser.password);
-        if (!isPasswordCorrect) return res.status(400).json({ message: "Password galat hai." });
+        if (!username || !password) {
+            return res.status(400).json({
+                message: "Username and password are required."
+            });
+        }
 
-        res.status(200).json({ result: existingUser, message: "Login Successful! 🔓" });
+        const existingUser = await User.findOne({
+            name: username
+        });
+
+        if (!existingUser) {
+            return res.status(404).json({
+                message: "User not found."
+            });
+        }
+
+        const isPasswordCorrect = await bcrypt.compare(
+            password,
+            existingUser.password
+        );
+
+        if (!isPasswordCorrect) {
+            return res.status(400).json({
+                message: "Incorrect password."
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            result: existingUser,
+            message: "Login Successful!"
+        });
+
     } catch (error) {
-        res.status(500).json({ message: "Login fail ho gaya." });
+        console.error("LOGIN ERROR:", error);
+
+        return res.status(500).json({
+            message: error.message || "Login failed."
+        });
     }
 };
